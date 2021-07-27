@@ -3,12 +3,12 @@
   "version": "1.89.3",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/react-native-webrtc/react-native-webrtc.git"
+    "url": "git+https://github.com/varunkumarck/react-native-webrtc.git"
   },
   "nativePackage": true,
   "description": "WebRTC for React Native",
   "license": "MIT",
-  "homepage": "https://github.com/react-native-webrtc/react-native-webrtc",
+  "homepage": "https://github.com/varunkumarck/react-native-webrtc",
   "keywords": [
     "react-component",
     "react-native",
@@ -35,6 +35,6 @@
     }
   },
   "bugs": {
-    "url": "https://github.com/react-native-webrtc/react-native-webrtc/issues"
+    "url": "https://github.com/varunkumarck/react-native-webrtc/issues"
   }
 }
