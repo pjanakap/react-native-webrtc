@@ -18,6 +18,7 @@
 #import <WebRTC/RTCMediaConstraints.h>
 #import <WebRTC/RTCIceCandidate.h>
 #import <WebRTC/RTCSessionDescription.h>
+#import <WebRTC/RTCRtpSender.h>
 #import <WebRTC/RTCStatisticsReport.h>
 
 #import "WebRTCModule.h"
@@ -319,6 +320,60 @@ RCT_EXPORT_METHOD(peerConnectionGetStats:(nonnull NSNumber *) objectID
   [peerConnection statisticsWithCompletionHandler:^(RTCStatisticsReport *report) {
     resolve([self statsToJSON:report]);
   }];
+}
+
+RCT_EXPORT_METHOD(peerConnectionSendDtmfTone:(nonnull NSString *)dtmfTone
+                  duration:(nonnull NSNumber *)duration
+                  interToneGap:(nonnull NSNumber *)interToneGap
+                  objectID:(nonnull NSNumber *)objectID
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    RTCPeerConnection *peerConnection = self.peerConnections[objectID];
+    RTCRtpSender* m_audioSender = nil ;
+    for( RTCRtpSender *rtpSender in peerConnection.senders){
+     if([[[rtpSender track] kind] isEqualToString:@"audio"]) {
+       NSLog(@"Assigning audio to rtp sender");
+       m_audioSender = rtpSender;
+     }
+    }
+     if(m_audioSender){
+     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+     [queue addOperationWithBlock:^{
+        float durationSeconds = [duration floatValue] / 1000;
+        NSLog(@"Duration in seconds :: [%f]", durationSeconds);
+        float interToneGapSeconds = [interToneGap floatValue] / 1000;
+        NSLog(@"Inter tone gap in seconds :: [%f]", interToneGapSeconds);
+        BOOL istoneplayed = [m_audioSender.dtmfSender insertDtmf :(NSString *)dtmfTone
+            duration:(NSTimeInterval)durationSeconds interToneGap:(NSTimeInterval)interToneGapSeconds];
+        NSLog(@"DTMF Tone played :: [%s]", istoneplayed ? "true" : "false");
+        callback(@[istoneplayed ? @(YES) : @(NO), @(istoneplayed)]);
+     }];
+     }
+     else {
+         callback(@[@(NO), @(false)]);
+     }
+}
+
+RCT_EXPORT_METHOD(peerConnectionCanInsertDtmf:(nonnull NSNumber *)objectID
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    RTCPeerConnection *peerConnection = self.peerConnections[objectID];
+    RTCRtpSender* m_audioSender = nil ;
+    for( RTCRtpSender *rtpSender in peerConnection.senders){
+     if([[[rtpSender track] kind] isEqualToString:@"audio"]) {
+       NSLog(@"Assigning audio to rtp sender");
+       m_audioSender = rtpSender;
+     }
+    }
+     if(m_audioSender){
+     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+     [queue addOperationWithBlock:^{
+        NSLog(@"CanInsertDtmf :: [%s]", m_audioSender.dtmfSender.canInsertDtmf ? "true" : "false");
+        callback(@[m_audioSender.dtmfSender.canInsertDtmf ? @(YES) : @(NO), @(m_audioSender.dtmfSender.canInsertDtmf)]);
+     }];
+     } else {
+         callback(@[@(NO), @(false)]);
+     }
 }
 
 /**
