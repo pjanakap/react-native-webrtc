@@ -226,11 +226,13 @@ class GetUserMediaImpl {
     void mediaStreamTrackSetEnabled(String trackId, final boolean enabled) {
         TrackPrivate track = tracks.get(trackId);
         if (track != null && track.videoCaptureController != null) {
-            if (enabled) {
-                track.videoCaptureController.startCapture();
-            } else {
-                track.videoCaptureController.stopCapture();
-            }
+//      The native SDK already implemented sending black frames when muted.
+//      So just comment void mediaStreamTrackSetEnabled function will work on muted/unmuted situation.
+//             if (enabled) {
+//                 track.videoCaptureController.startCapture();
+//             } else {
+//                 track.videoCaptureController.stopCapture();
+//             }
         }
     }
 
